@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect
+from flask import Flask, render_template, url_for, redirect, flash
 from flask_bootstrap import Bootstrap
 from flask_wtf import Form
 from wtforms import StringField, SubmitField, PasswordField
@@ -41,7 +41,15 @@ def home():
 def login():
     form = SecretSantaForm()
     if form.validate_on_submit():
-        return redirect(url_for('home'))
+        q = User.query.filter_by(email=form.email.data).first()
+        if q is None:
+            flash('This email is not registered!')
+            return render_template('login.html', form=form)
+        elif form.password.data == q.password:
+            return redirect(url_for('home'))
+        else:
+            flash('Incorrect password!')
+            return render_template('login.html', form=form)
 
     return render_template('login.html', form=form)
 
