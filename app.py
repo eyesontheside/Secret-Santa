@@ -3,10 +3,25 @@ from flask_bootstrap import Bootstrap
 from flask_wtf import Form
 from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import DataRequired
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Hard to guess string'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 bootstrap = Bootstrap(app)
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(80), unique=True    )
+    password = db.Column(db.String(120))
+
+    def __init__(self, email, password):
+        self.email = email
+        self.password = password
+
+    def __repr__(self):
+        return '<Email %r>' % self.email
 
 class SecretSantaForm(Form):
     email = StringField('Email', [DataRequired()])
@@ -27,6 +42,7 @@ def login():
     form = SecretSantaForm()
     if form.validate_on_submit():
         return redirect(url_for('home'))
+
     return render_template('login.html', form=form)
 
 
