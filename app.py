@@ -1,8 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, flash
 from flask_bootstrap import Bootstrap
-from flask_wtf import Form
-from wtforms import StringField, SubmitField, PasswordField
-from wtforms.validators import DataRequired
+from forms import SecretSantaLogin, SecretSantaRegister
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -27,29 +25,20 @@ class Santa(db.Model):
     def __repr__(self):
         return '<Email %r>' % self.email
 
-class SecretSantaLogin(Form):
-    email = StringField('Email', [DataRequired()])
-    password = PasswordField('Password', [DataRequired()])
-    submit = SubmitField('Submit')
-
 
 @app.route('/')
 def hello_world():
-    return '<h1>Hello World!</h1>'
+    return render_template(url_for('login'))
 
 @app.route('/home')
 def home():
     return '<h1>Welcome Back!</h1>'
 
-@app.route('/register/', methods=['GET', 'POST'])
-def register():
-    pass
-
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
     form = SecretSantaLogin()
     if form.validate_on_submit():
-        q = User.query.filter_by(email=form.email.data).first()
+        q = Santa.query.filter_by(email=form.email.data).first()
         if q is None:
             flash('This email is not registered!')
             return render_template('login.html', form=form)
@@ -60,6 +49,18 @@ def login():
             return redirect(url_for('home'))
 
     return render_template('login.html', form=form)
+
+@app.route('/register/', methods=['GET', 'POST'])
+def register():
+    form = SecretSantaRegister()
+    if form.validate_on_submit():
+        new_user = Santa(form.first_name.data, form.last_name.data, form.email.data, form.password.data)
+        db.session.add(new_user)
+        db.session.commit()
+        flash('You have been registered!')
+        return render_template(url_for('login'))
+
+    return render_template('register.html', form=form)
 
 
 if __name__ == '__main__':
