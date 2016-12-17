@@ -11,10 +11,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///secretsantas.db'
 bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
 
-class NewUser(db.Model):
+class Santa(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.column(db.String(120))
-    last_name = db.column(db.String(120))
+    first_name = db.Column(db.String(120))
+    last_name = db.Column(db.String(120))
     email = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(120))
 
