@@ -7,23 +7,27 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Hard to guess string'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///secretsantas.db'
 bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
 
-class User(db.Model):
+class NewUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(80), unique=True    )
+    first_name = db.column(db.String(120))
+    last_name = db.column(db.String(120))
+    email = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(120))
 
-    def __init__(self, email, password):
+    def __init__(self, first_name, last_name, email, password):
+        self.first_name = first_name
+        self.last_name = last_name
         self.email = email
         self.password = password
 
     def __repr__(self):
         return '<Email %r>' % self.email
 
-class SecretSantaForm(Form):
+class SecretSantaLogin(Form):
     email = StringField('Email', [DataRequired()])
     password = PasswordField('Password', [DataRequired()])
     submit = SubmitField('Submit')
@@ -37,19 +41,23 @@ def hello_world():
 def home():
     return '<h1>Welcome Back!</h1>'
 
+@app.route('/register/', methods=['GET', 'POST'])
+def register():
+    pass
+
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
-    form = SecretSantaForm()
+    form = SecretSantaLogin()
     if form.validate_on_submit():
         q = User.query.filter_by(email=form.email.data).first()
         if q is None:
             flash('This email is not registered!')
             return render_template('login.html', form=form)
-        elif form.password.data == q.password:
-            return redirect(url_for('home'))
-        else:
+        elif form.password.data != q.password:
             flash('Incorrect password!')
             return render_template('login.html', form=form)
+        else:
+            return redirect(url_for('home'))
 
     return render_template('login.html', form=form)
 
