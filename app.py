@@ -28,7 +28,7 @@ class Santa(db.Model):
 
 @app.route('/')
 def hello_world():
-    return render_template(url_for('login'))
+    return redirect(url_for('login'))
 
 @app.route('/home')
 def home():
@@ -58,7 +58,7 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         flash('You have been registered!')
-        return render_template(url_for('login'))
+        return redirect(url_for('login'))
 
     return render_template('register.html', form=form)
 

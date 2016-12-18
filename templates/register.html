@@ -1,6 +1,31 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
+{% block title %}Secret Santa Register{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='login.css')}}">
+{% endblock %}
+
 {% block body %}
-{{ wtf.quick_form(form) }}
+
+<div class="container">
+
+<form class="form-signin" action="{{ url_for('register') }}" method="post">
+    <h2 class="form-signin-heading">Secret Santa Register</h2>
+    {{ form.hidden_tag() }}
+    {{ form.first_name.label(**{'class': 'sr-only'}) }}
+    {{ form.first_name(**{'class': 'form-control', 'placeholder': 'First Name', 'autofocus': True}) }}
+    {{ form.last_name.label(**{'class': 'sr-only'}) }}
+    {{ form.last_name(**{'class': 'form-control', 'placeholder': 'Last Name'}) }}
+    {{ form.email.label(**{'class': 'sr-only'}) }}
+    {{ form.email(**{'class': 'form-control', 'placeholder': 'Email'}) }}
+    {{ form.password.label(**{'class': 'sr-only'}) }}
+    {{ form.password(**{'class': 'form-control', 'placeholder': 'Password'}) }}
+    {{ form.submit(**{'class': 'btn btn-lg btn-primary btn-block'}) }}
+</form>
+
+</div>
+
 {% endblock %}
